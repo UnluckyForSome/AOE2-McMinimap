@@ -2,7 +2,7 @@
  
 McMinimap generates static Age of Empires 2 mini-maps using recorded game data, which I use to autopopulate my [YouTube Channel](https://www.youtube.com/@buttonbashofficial) intros!
 
-![Minimap example 1](examples/example1.png)
+![Minimap example 1](readme/example1.png)
 
 # Features
 
@@ -17,7 +17,7 @@ McMinimap generates static Age of Empires 2 mini-maps using recorded game data, 
  - Usable as a Python module (call it from other code)
  - Usable as a CLI (run locally)
 
-![Minimap example 1](examples/example2.png)
+![Minimap example 1](readme/example2.png)
 
 # Install
 
@@ -94,7 +94,7 @@ python McMinimap.py --input "path/to/scenario.aoe2scenario" --output minimap.png
 
 Use either the **library API** (recommended for integration) or the **CLI** (recommended for local runs).
 
-![Minimap example 1](examples/example3.png)
+![Minimap example 1](readme/example3.png)
 
 # Thanks
 
@@ -102,4 +102,4 @@ Thankyou to **Marfullsen**'s excellent [AOE2 Minimap Generator](https://github.c
 
 Of course thanks to **happyleaves**'s [aoc-mgz](https://github.com/happyleavesaoc/aoc-mgz), which is key in parsing AOE2's recorded games.
 
-![Minimap example 1](examples/example4.png)
+![Minimap example 1](readme/example4.png)
