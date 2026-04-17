@@ -1,0 +1,4 @@
+mgz-fast
+Pillow
+AoE2ScenarioParser
+# Classic .scx / .scn scenarios: McMinimapLegacy.py (trimmed AgeScx; not on PyPI)

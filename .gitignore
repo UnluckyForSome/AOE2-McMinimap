@@ -1,0 +1,34 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+
+# Test / typecheck / lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---- Editor / OS ----
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# ---- Project outputs ----
+/output/
+
+# Local run inputs (often large / personal)
+/input/
