@@ -647,7 +647,9 @@ class MinimapSettings:
     player_object_size: int = 4
     town_center_size: int = 4
     civ_emblem_halo: int = 40
-    final_size: tuple[int, int] = (1630, 815)
+    # If set, image is scaled to this exact size (may distort aspect). None = keep size from
+    # multiplier, angle, and orthographic_ratio (recommended).
+    final_size: tuple[int, int] | None = None
 
 
 @contextmanager
@@ -1017,9 +1019,13 @@ def save_minimap(
     *,
     output_path: str | None = None,
     verbose: bool = False,
-    final_size: tuple[int, int] = (1630, 815),
+    final_size: tuple[int, int] | None = None,
 ):
-    """Render a minimap from a recording or scenario. If ``output_path`` is set, write PNG there; always returns the PIL image."""
+    """Render a minimap from a recording or scenario. If ``output_path`` is set, write PNG there; always returns the PIL image.
+
+    ``final_size`` (optional): if given, the composed image is rescaled to exactly WxH. If omitted,
+    output dimensions follow ``multiplier_integer``, ``angle``, and ``orthographic_ratio`` only.
+    """
     if verbose:
         print(f"Input file: {input_file}")
     match = read_map(input_file)
@@ -1103,7 +1109,8 @@ def save_minimap(
 
     canvas.paste(border_canvas, border_canvas)
 
-    canvas = canvas.resize(final_size, resample=Image.Resampling.LANCZOS)
+    if final_size is not None:
+        canvas = canvas.resize(final_size, resample=Image.Resampling.LANCZOS)
 
     if output_path:
         canvas.save(output_path)
@@ -1247,6 +1254,14 @@ if __name__ == "__main__":
     parser.add_argument("--draw-gold", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--draw-stone", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--draw-relics", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument(
+        "--resize",
+        nargs=2,
+        type=int,
+        metavar=("W", "H"),
+        default=None,
+        help="Optional final width and height in pixels (stretches to fit). Default: native size from render settings.",
+    )
     args = parser.parse_args()
 
     if args.updateconstants:
@@ -1279,6 +1294,7 @@ if __name__ == "__main__":
         draw_walls=args.draw_walls,
         smooth_walls=args.smooth_walls,
         emblems_dir=args.emblems_dir,
+        final_size=tuple(args.resize) if args.resize else None,
     )
 
     with _apply_settings(settings):
@@ -1300,7 +1316,9 @@ if __name__ == "__main__":
             for src, dest in jobs:
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 try:
-                    save_minimap(str(src), output_path=str(dest), verbose=True)
+                    save_minimap(
+                        str(src), output_path=str(dest), verbose=True, final_size=settings.final_size
+                    )
                     ok_count += 1
                 except Exception as e:
                     err = f"{type(e).__name__}: {e}"
@@ -1313,4 +1331,9 @@ if __name__ == "__main__":
                     print(f"  {path}\n    {msg}")
                 sys.exit(1)
         else:
-            save_minimap(str(input_path), output_path=args.output, verbose=True)
+            save_minimap(
+                str(input_path),
+                output_path=args.output,
+                verbose=True,
+                final_size=settings.final_size,
+            )
