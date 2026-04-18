@@ -1,105 +1,142 @@
 # McMinimap
- 
-McMinimap generates static Age of Empires 2 mini-maps using recorded game data, which I use to autopopulate my [YouTube Channel](https://www.youtube.com/@buttonbashofficial) intros!
 
-![Minimap example 1](examples/example1.png)
+Static isometric minimaps for **Age of Empires II** — from **recorded games** (`.aoe2record`, `.mgz`, …) or **scenarios** (`.aoe2scenario`, `.scx`, `.scn`). Use it as a **CLI** or import it from **Python**.
 
-# Features
+Used for [Button Bash](https://www.youtube.com/@buttonbashofficial) YouTube intros.
 
- - Adjustable sizes for everything!
- - Adjustable 360 degree map orientation
- - "Square" or "Pixel" object modes
- - Easily show/hide individual resources
- - Optional Civ Emblem TC marker
- - Adjustable orthographic ratio (map tilt)
- - Elevation
- - Adjustable borders
- - Usable as a Python module (call it from other code)
- - Usable as a CLI (run locally)
+![Sample minimap](readme/example1.png)
 
-![Minimap example 1](examples/example2.png)
+---
 
-# Install
+## What you can tweak
+
+- Map **rotation** and **scale** (tile multiplier)
+- **Square** vs **rotated** object drawing
+- Toggle **players**, **gaia**, **food**, **gold**, **stone**, **relics**, **cliffs**, **walls**
+- **Orthographic ratio** (how “flat” the tilt looks)
+- **Border** styling around the map
+- Optional **town-center markers**: none, **pixel** (default), or **civilization emblem** PNGs
+
+![Another style](readme/example2.png)
+
+---
+
+## Install
+
+Clone the repo, create a venv if you like, then:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-# Library usage (import)
+Recorded games try, in order: **happyleaves header-only** (`legacy/mgz_legacy/summary/mcminimap_light.py`), then vendored **`FullSummary`**, then pip [AoEInsights mgz-fast](https://github.com/AoEInsights/mgz-fast) (`mgz.fast.header.parse`). No PyPI `mgz` (happyleaves) install.
+
+---
+
+## Command line
+
+**One file → one PNG**
+
+```bash
+python McMinimap.py --input "match.aoe2record" --output minimap.png
+```
+
+**Folder → many PNGs** (recursive; output tree mirrors input)
+
+```bash
+python McMinimap.py --input ./replays --output ./pngs
+```
+
+**Common flags** (defaults match a typical “full map” render):
+
+```bash
+python McMinimap.py --input map.aoe2scenario --output out.png ^
+  --object_mode square ^
+  --angle 45 --multiplier_integer 9 --orthographic_ratio 2 --border_spacing 4 ^
+  --draw-cliffs --draw-walls --smooth-walls --draw-gaia --draw-players ^
+  --draw-food --draw-gold --draw-stone --draw-relics
+```
+
+On **Linux/macOS**, replace `^` with `\` for line continuation, or put everything on one line.
+
+Default is **`--town-center pixel`** (small TC marker per player color). Use **`--town-center none`** to disable TC markers, or **`--town-center emblem`** for civ PNGs from `emblems/` next to `McMinimap.py` (`Britons.png`, …). Override with `--emblems-dir /path/to/pngs`.
+
+---
+
+## Python
+
+**PNG bytes** (e.g. for a web app or buffer):
 
 ```python
-from McMinimap import RenderSettings, render_minimap_png_bytes
+from McMinimap import MinimapSettings, to_png_bytes
 
-settings = RenderSettings(
-    object_mode="square",
-    player_tc_marker="none",
-    angle=45,
-    multiplier_integer=9,
-    orthographic_ratio=2,
-    border_spacing=4,
-    draw_cliffs=True,
-    draw_walls=True,
-    rotate_walls_with_canvas=True,
-    draw_gaia_objects=True,
-    draw_player_objects=False,
-)
-
-png_bytes = render_minimap_png_bytes("path/to/scenario.aoe2scenario", settings=settings)
-with open("minimap.png", "wb") as f:
-    f.write(png_bytes)
+settings = MinimapSettings(angle=45, multiplier_integer=9)
+png = to_png_bytes("scenario.aoe2scenario", settings=settings)
+with open("out.png", "wb") as f:
+    f.write(png)
 ```
 
-# CLI usage (run locally)
+**Save a PNG with explicit settings:**
+
+```python
+from McMinimap import MinimapSettings, to_image
+
+to_image(
+    "match.aoe2record",
+    settings=MinimapSettings(town_center="none"),  # default is pixel; omit MinimapSettings() for defaults
+).save("minimap.png")
+```
+
+**Read map / player data** without rendering (for your own tooling):
+
+```python
+from McMinimap import read_map
+
+m = read_map("match.aoe2record")
+dim = m.map.dimension
+players = m.players
+gaia = m.gaia
+```
+
+`MinimapSettings` is a frozen dataclass: pass only the fields you care about; the rest use built-in defaults (see `McMinimap.py` near `class MinimapSettings`).
+
+![Rendered example](readme/example3.png)
+
+---
+
+## Supported files
+
+| Kind | Extensions |
+|------|------------|
+| Recorded games | `.aoe2record`, `.mgz`, `.mgx`, `.mgl` |
+| DE scenarios | `.aoe2scenario` |
+| Classic scenarios | `.scx` (The Conquerors), `.scn` (Age of Kings) |
+
+Anything else raises `ValueError` from `read_map()`.
+
+---
+
+## Data under `data/`
+
+Rendering uses JSON in **`data/`**:
+
+| File | Role |
+|------|------|
+| `mcminimap_constants.json` | Terrain colors, object ID sets (ships with the repo) |
+| `aoc_dataset_100.json`, `aoc_constants.json` | Civilization names for replays ([SiegeEngineers aoc-reference-data](https://github.com/SiegeEngineers/aoc-reference-data)) |
+
+If the two `aoc_*.json` files are missing, importing the module fails until you either restore them from the repo or refresh them:
 
 ```bash
-python McMinimap.py --input "path/to/scenario.aoe2scenario" --output minimap.png
+python McMinimap.py --updateconstants
 ```
 
-Common options:
+From code: `from McMinimap import update_aoc_reference_cache` then `update_aoc_reference_cache()`.
 
-```bash
-python McMinimap.py --input "path/to/scenario.aoe2scenario" --output minimap.png ^
-  --object_mode square ^
-  --player_tc_marker none ^
-  --angle 45 ^
-  --multiplier_integer 9 ^
-  --orthographic_ratio 2 ^
-  --border_spacing 4 ^
-  --draw_cliffs --draw_walls --rotate_walls_with_canvas --draw_gaia_objects --no-draw_player_objects
-```
+---
 
-# Input file support
+## Thanks
 
-`get_match()` in `McMinimap.py` only accepts the extensions below (anything else raises `ValueError`).
+Inspired by **Marfullsen**’s [AoE2 minimap generator](https://github.com/Marfullsen/AoE2-minimap-generator). Replay parsing uses a vendored copy of **happyleaves** [aoc-mgz](https://github.com/happyleavesaoc/aoc-mgz) under `legacy/mgz_legacy/` and **AoEInsights** [mgz-fast](https://github.com/AoEInsights/mgz-fast) from PyPI.
 
-**Recorded games** (tile/object data from the replay header via **mgz-fast**):
-
-- Age of Kings (`.mgl`)
-- The Conquerors (`.mgx`)
-- Userpatch 1.4 (`.mgz`)
-- Userpatch 1.5 (`.mgz`)
-- HD Edition ≥ 4.6 (`.aoe2record`)
-- Definitive Edition (`.aoe2record`)
-
-**Scenarios — Definitive Edition** (via **AoE2ScenarioParser**):
-
-- `.aoe2scenario`
-
-**Scenarios — classic** (via **McMinimapLegacy**, trimmed AgeScx):
-
-- Age of Kings (`.scn`)
-- The Conquerors (`.scx`)
-
-# Usage
-
-Use either the **library API** (recommended for integration) or the **CLI** (recommended for local runs).
-
-![Minimap example 1](examples/example3.png)
-
-# Thanks
-
-Thankyou to **Marfullsen**'s excellent [AOE2 Minimap Generator](https://github.com/Marfullsen/AoE2-minimap-generator), on which this script was based on. In the end much got rewritten, but it certainly served as the inspiration and a great starting point.
-
-Of course thanks to **happyleaves**'s [aoc-mgz](https://github.com/happyleavesaoc/aoc-mgz), which is key in parsing AOE2's recorded games.
-
-![Minimap example 1](examples/example4.png)
+![Sample minimap](readme/example4.png)

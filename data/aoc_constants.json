@@ -1,0 +1,136 @@
+{
+  "game_types": {
+    "0": "Random Map",
+    "1": "Regicide",
+    "2": "Deathmatch",
+    "3": "Scenario",
+    "4": "Campaign",
+    "6": "King of the Hill",
+    "7": "Wonder Race",
+    "8": "Defend the Wonder",
+    "9": "Turbo Random",
+    "10": "Capture the Relic",
+    "11": "Sudden Death",
+    "12": "Battle Royale",
+    "13": "Empire Wars",
+    "15": "Co-op Campaign",
+    "16": "D3"
+  },
+  "starting_resources": {
+    "0": "Standard",
+    "1": "Low",
+    "2": "Medium",
+    "3": "High"
+  },
+  "victory_conditions": {
+    "0": "Standard",
+    "1": "Conquest",
+    "2": "Time Limit",
+    "3": "Score Limit",
+    "4": "Custom",
+    "7": "Time Limit",
+    "8": "Score Limit",
+    "9": "Regicide",
+    "11": "Last Man Standing"
+  },
+  "map_reveal_choices": {
+    "0": "Normal",
+    "1": "Explored",
+    "2": "All Visible"
+  },
+  "starting_ages": {
+    "0": "Dark",
+    "1": "Feudal",
+    "2": "Castle",
+    "3": "Imperial",
+    "4": "Post-Imperial",
+    "6": "Post-Imperial"
+  },
+  "difficulties": {
+    "0": "Hardest",
+    "1": "Hard",
+    "2": "Moderate",
+    "3": "Standard",
+    "4": "Easiest"
+  },
+  "speeds": {
+    "100": "Slow",
+    "118": "Slow",
+    "150": "Standard",
+    "169": "Standard",
+    "178": "Standard",
+    "200": "Fast",
+    "237": "Fast"
+  },
+  "map_sizes": {
+    "120": "Tiny",
+    "144": "Small",
+    "168": "Medium",
+    "200": "Normal",
+    "220": "Large",
+    "240": "Giant",
+    "480": "Ludicrous"
+  },
+  "player_colors": {
+    "0": "Blue",
+    "1": "Red",
+    "2": "Green",
+    "3": "Yellow",
+    "4": "Teal",
+    "5": "Purple",
+    "6": "Gray",
+    "7": "Orange"
+  },
+  "formations": {
+    "2": "Line",
+    "4": "Box",
+    "7": "Staggered",
+    "8": "Flank"
+  },
+  "stances": {
+    "0": "Aggressive",
+    "1": "Defensive",
+    "2": "Stand Ground",
+    "3": "No Attack"
+  },
+  "orders": {
+    "1": "Pack Trebuchet",
+    "2": "Unpack Trebuchet",
+    "4": "Unqueue",
+    "5": "Garrison"
+  },
+  "commands": {
+    "0": "Diplomacy",
+    "1": "Speed",
+    "5": "Allied Victory",
+    "6": "Cheat",
+    "10": "Spies",
+    "11": "Strategic Number",
+    "13": "Queue Farm",
+    "14": "Unqueue Farm",
+    "16": "Farm Autoqueue",
+    "17": "Queue Fish Trap",
+    "18": "Unqueue Fish Trap",
+    "19": "Fish Trap Autoqueue",
+    "20": "Default Stance"
+  },
+  "diplomacy": {
+    "0": "Allied",
+    "1": "Neutral",
+    "3": "Enemy"
+  },
+  "resources": {
+    "0": "Food",
+    "1": "Wood",
+    "2": "Stone",
+    "3": "Gold"
+  },
+  "leaderboards": {
+    "1": "Deathmatch 1v1",
+    "2": "Deathmatch TG",
+    "3": "Random Map 1v1",
+    "4": "Random Map TG",
+    "13": "Empire Wars 1v1",
+    "14": "Empire Wars TG"
+  }
+}
