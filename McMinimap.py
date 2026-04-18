@@ -613,6 +613,9 @@ town_center_size = 4
 # Extra radius (px, post-enlarge canvas) around pasted civ PNGs in emblem mode.
 civ_emblem_halo = 40
 
+# Hard cap: large multipliers explode RAM/CPU (canvas grows ~ with multiplier^2 before optional resize).
+MAX_MULTIPLIER_INTEGER = 10
+
 ObjectMode = Literal["square", "rotated"]
 TownCenterMode = Literal["none", "pixel", "emblem"]
 
@@ -622,6 +625,7 @@ class MinimapSettings:
     object_mode: ObjectMode = "square"
     town_center: TownCenterMode = "pixel"
     angle: int = 45
+    # Values above ``MAX_MULTIPLIER_INTEGER`` are clamped in ``_apply_settings``.
     multiplier_integer: int = 9
     orthographic_ratio: int = 2
     border_spacing: int = 4
@@ -711,7 +715,7 @@ def _apply_settings(settings: MinimapSettings):
         object_mode = settings.object_mode
         town_center = settings.town_center
         angle = int(settings.angle)
-        multiplier_integer = int(settings.multiplier_integer)
+        multiplier_integer = min(MAX_MULTIPLIER_INTEGER, max(1, int(settings.multiplier_integer)))
         orthographic_ratio = int(settings.orthographic_ratio)
         border_spacing = int(settings.border_spacing)
         draw_players = bool(settings.draw_players)
@@ -1242,7 +1246,13 @@ if __name__ == "__main__":
         help=f"Directory of civ emblem PNGs (default: {DEFAULT_EMBLEMS_DIR}).",
     )
     parser.add_argument("--angle", type=int, default=45)
-    parser.add_argument("--multiplier_integer", type=int, default=9)
+    parser.add_argument(
+        "--multiplier_integer",
+        type=int,
+        default=9,
+        choices=range(1, MAX_MULTIPLIER_INTEGER + 1),
+        help=f"Tile multiplier (1..{MAX_MULTIPLIER_INTEGER}); larger values increase output resolution and memory use.",
+    )
     parser.add_argument("--orthographic_ratio", type=int, default=2)
     parser.add_argument("--border_spacing", type=int, default=4)
     parser.add_argument("--draw_cliffs", action=argparse.BooleanOptionalAction, default=True)
