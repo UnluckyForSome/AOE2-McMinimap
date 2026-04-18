@@ -637,6 +637,18 @@ class MinimapSettings:
     smooth_walls: bool = True
     emblems_dir: Path | str | None = None
 
+    # Marker / layout tunables (module-level globals; applied by ``_apply_settings``).
+    cliff_size: int = 1
+    player_wall_size: int = 1
+    relic_size: int = 4
+    stone_size: int = 4
+    gold_size: int = 4
+    food_size: int = 4
+    player_object_size: int = 4
+    town_center_size: int = 4
+    civ_emblem_halo: int = 40
+    final_size: tuple[int, int] = (1630, 815)
+
 
 @contextmanager
 def _apply_settings(settings: MinimapSettings):
@@ -656,6 +668,15 @@ def _apply_settings(settings: MinimapSettings):
     global draw_walls
     global smooth_walls
     global _render_emblems_dir
+    global cliff_size
+    global player_wall_size
+    global relic_size
+    global stone_size
+    global gold_size
+    global food_size
+    global player_object_size
+    global town_center_size
+    global civ_emblem_halo
 
     old = (
         object_mode,
@@ -674,6 +695,15 @@ def _apply_settings(settings: MinimapSettings):
         draw_walls,
         smooth_walls,
         _render_emblems_dir,
+        cliff_size,
+        player_wall_size,
+        relic_size,
+        stone_size,
+        gold_size,
+        food_size,
+        player_object_size,
+        town_center_size,
+        civ_emblem_halo,
     )
     try:
         object_mode = settings.object_mode
@@ -692,6 +722,15 @@ def _apply_settings(settings: MinimapSettings):
         draw_walls = bool(settings.draw_walls)
         smooth_walls = bool(settings.smooth_walls)
         _render_emblems_dir = settings.emblems_dir
+        cliff_size = int(settings.cliff_size)
+        player_wall_size = int(settings.player_wall_size)
+        relic_size = int(settings.relic_size)
+        stone_size = int(settings.stone_size)
+        gold_size = int(settings.gold_size)
+        food_size = int(settings.food_size)
+        player_object_size = int(settings.player_object_size)
+        town_center_size = int(settings.town_center_size)
+        civ_emblem_halo = int(settings.civ_emblem_halo)
         yield
     finally:
         (
@@ -711,6 +750,15 @@ def _apply_settings(settings: MinimapSettings):
             draw_walls,
             smooth_walls,
             _render_emblems_dir,
+            cliff_size,
+            player_wall_size,
+            relic_size,
+            stone_size,
+            gold_size,
+            food_size,
+            player_object_size,
+            town_center_size,
+            civ_emblem_halo,
         ) = old
 
 
@@ -1067,7 +1115,7 @@ def to_image(input_file: str, *, settings: MinimapSettings | None = None):
     """Render to an in-memory PIL image. Uses ``emblems/`` beside this module unless overridden."""
     s = settings or MinimapSettings()
     with _apply_settings(s):
-        return save_minimap(input_file, output_path=None, verbose=False)
+        return save_minimap(input_file, output_path=None, verbose=False, final_size=s.final_size)
 
 
 def to_png_bytes(input_file: str, *, settings: MinimapSettings | None = None) -> bytes:
